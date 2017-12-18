@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final Map<String, List<String>> PLACES_BY_BEACONS;
@@ -73,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AppCenter.start(getApplication(), "e257ea9a-91bb-4904-86b7-bcfbb7dfd65f",
+                Analytics.class, Crashes.class);
 
         // If they student is not set, show the correct acitvity.
         SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
