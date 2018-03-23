@@ -48,7 +48,7 @@ public class MyApplication extends Application {
 
     private BeaconManager beaconManager;
     private static final String TAG = "RollCall";
-    private static final String ApiKey = "12345";
+    private static final String ApiKey = "456789";
     ArrayList<Class> classes = new ArrayList<Class>();
     ArrayList<Instructor> instructors = new ArrayList<Instructor>();
     String classId;
@@ -111,7 +111,7 @@ public class MyApplication extends Application {
 
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
-            public void onServiceReady() {
+            public void onServiceReady() {  
                 Log.d("Airport", "onServiceReady");
                 //beaconManager.startMonitoring(new BeaconRegion("monitored region",
                 //        UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 12988, 22472));
@@ -124,9 +124,9 @@ public class MyApplication extends Application {
     public String SubmitRollCall()
     {
         String studentId = "200175160";
-        String classId = "9aaf11de-79d3-44af-9e32-8c841a6a456d";
+        String classId = "6F4502E2-798D-480A-A473-DD08F31F3BF6";
 
-        String hashtag = "lab";
+        String hashtag = "arizona";
 
         Log.d(TAG, "SubmitRollCall");
 
