@@ -8,8 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.estimote.coresdk.cloud.api.CloudCallback;
 import com.estimote.coresdk.cloud.api.EstimoteCloud;
@@ -40,6 +44,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,12 +71,15 @@ public class MyApplication extends Application {
             public void onEnteredRegion(BeaconRegion beaconRegion, List<Beacon> beacons) {
                 Log.d(TAG, "onEnteredRegion : " + beacons.size());
 
+                /*
                 try {
                     GetInstructors();
                 } catch (JSONException e) {
+
                     Log.e(TAG, "exception", e);
                     e.printStackTrace();
                 }
+                */
 
                 for (Beacon b : beacons) {
                     Log.d(TAG, String.format("%d:%d:%s", b.getMajor(), b.getMinor(), b.toString()));
@@ -82,7 +90,6 @@ public class MyApplication extends Application {
                             Log.d(TAG+" ==========", String.valueOf(beaconInfo.toString()));
                            // Log.d(TAG+" ==========", beaconInfo.getClass().getAnnotations());
                             Toast.makeText(getApplicationContext(), "onEnteredRegion:"+ beaconInfo.name, Toast.LENGTH_LONG).show();
-
                             //classId = beaconInfo.settings[TAG]
                         }
 
@@ -93,6 +100,7 @@ public class MyApplication extends Application {
                     });
                 }
 
+                new MessageTask("Enter Region").execute();
 
                 String response = SubmitRollCall();
                 showNotification(
@@ -103,6 +111,8 @@ public class MyApplication extends Application {
             @Override
             public void onExitedRegion(BeaconRegion beaconRegion) {
                 Log.d(TAG, "onExitedRegion");
+                new MessageTask("Exit Region").execute();
+
                 Toast.makeText(getApplicationContext(), "onExitedRegion:", Toast.LENGTH_LONG).show();
                 cancelNotification();
 
@@ -112,9 +122,9 @@ public class MyApplication extends Application {
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {  
-                Log.d("Airport", "onServiceReady");
+                Log.d(TAG, "onServiceReady");
                 //beaconManager.startMonitoring(new BeaconRegion("monitored region",
-                //        UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 12988, 22472));
+                        //UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 12988, 22472));
                 beaconManager.startMonitoring(new BeaconRegion("monitored region",
                                 UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), null, null));
             }
@@ -123,34 +133,21 @@ public class MyApplication extends Application {
 
     public String SubmitRollCall()
     {
-        String studentId = "200175160";
+        String studentId = "foote";
         String classId = "6F4502E2-798D-480A-A473-DD08F31F3BF6";
-
         String hashtag = "arizona";
 
         Log.d(TAG, "SubmitRollCall");
 
-        // Add client web service call
-        RestClient client = new RestClient("http://rollcallrest.azurewebsites.net/api/RollCall");
-        client.AddHeader("X-ApiKey", ApiKey);
-
         SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
         studentId = prefs.getString("studentid", null);
 
-        Log.d(TAG, "StudentId : " + studentId);
 
         try {
-            // Add your data
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
-            nameValuePairs.add(new BasicNameValuePair("StudentNo", studentId));
-            nameValuePairs.add(new BasicNameValuePair("ClassId", classId));
-            nameValuePairs.add(new BasicNameValuePair("HashTag", hashtag));
-            for(NameValuePair v : nameValuePairs) {
-                client.AddParam(v.getName(), v.getValue());
-            }
-            client.Execute(RestClient.RequestMethod.POST);
-            String response = client.getResponse();
 
+            new SubmitRollCallTask(studentId, classId, hashtag).execute();
+
+            String response = "Success";
             Log.d(TAG, response);
             return response;
 
