@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
     //Mallard 46576 : 29665 : Yellow
     //Pintail 12988 : 22472 : Red
     //Widgeon: 2248:21110 : White
+    //Vikings : 56768:40033 : Pink
+    //Bears : 5736:57752 : Red
+    //Lions : 62882:59718 : Yellow
+    //Packers : 811:10869 : White
 
     // TODO: replace "<major>:<minor>" strings to match your own beacons.
     static {
@@ -56,6 +60,19 @@ public class MainActivity extends AppCompatActivity {
         }});
         placesByBeacons.put("65535:33066", new ArrayList<String>() {{
             add("canvasback");
+        }});
+
+        placesByBeacons.put("56768:40033", new ArrayList<String>() {{
+            add("vikings");
+        }});
+        placesByBeacons.put("5736:57752", new ArrayList<String>() {{
+            add("bears");
+        }});
+        placesByBeacons.put("62882:59718", new ArrayList<String>() {{
+            add("lions");
+        }});
+        placesByBeacons.put("811:10869", new ArrayList<String>() {{
+            add("packers");
         }});
         PLACES_BY_BEACONS = Collections.unmodifiableMap(placesByBeacons);
     }
