@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
                     Beacon nearestBeacon = beacons.get(0);
                     List<String> places = placesNearBeacon(nearestBeacon);
 
-                    Log.d(TAG, "Nearest beacon: " + nearestBeacon.toString());
-                    Log.d(TAG, "Nearest places: " + places);
+                    //Log.d(TAG, "Nearest beacon: " + nearestBeacon.toString());
+                    //Log.d(TAG, "Nearest places: " + places);
                     //new MessageTask("Nearest places: " + places).execute();
                     // TODO: update the UI here
                     TextView et = (TextView)findViewById(R.id.txtInfo);

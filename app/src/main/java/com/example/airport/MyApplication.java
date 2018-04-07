@@ -57,6 +57,7 @@ public class MyApplication extends Application {
     ArrayList<Class> classes = new ArrayList<Class>();
     ArrayList<Instructor> instructors = new ArrayList<Instructor>();
     String classId;
+    String macAddress;
 
     @Override
     public void onCreate() {
@@ -81,16 +82,22 @@ public class MyApplication extends Application {
                 }
                 */
 
-                for (Beacon b : beacons) {
-                    Log.d(TAG, String.format("%d:%d:%s", b.getMajor(), b.getMinor(), b.toString()));
+                for (final Beacon b : beacons) {
+                    Log.d(TAG + " Test", String.format("%d:%d:%s", b.getMajor(), b.getMinor(), b.toString()));
 
                     EstimoteCloud.getInstance().fetchBeaconDetails(b.getProximityUUID(), b.getMajor(), b.getMinor(), new CloudCallback<BeaconInfo>() {
                         @Override
                         public void success(BeaconInfo beaconInfo) {
-                            Log.d(TAG+" ==========", String.valueOf(beaconInfo.toString()));
-                           // Log.d(TAG+" ==========", beaconInfo.getClass().getAnnotations());
+                            Log.d(TAG+" ----------", String.valueOf(beaconInfo.toString()));
+                            macAddress = beaconInfo.macAddress.toString().replace(":", "");
+                            macAddress = macAddress.replace("[","");
+                            macAddress = macAddress.replace("]","");
+                            Log.d(TAG, "MacAddress : " + macAddress);
                             Toast.makeText(getApplicationContext(), "onEnteredRegion:"+ beaconInfo.name, Toast.LENGTH_LONG).show();
-                            //classId = beaconInfo.settings[TAG]
+                            new MessageTask("Enter Region").execute();
+
+                            String response = SubmitRollCall(macAddress);
+                            showNotification("RollCall Submitted.", response);
                         }
 
                         @Override
@@ -100,11 +107,7 @@ public class MyApplication extends Application {
                     });
                 }
 
-                new MessageTask("Enter Region").execute();
 
-                String response = SubmitRollCall();
-                showNotification(
-                        "RollCall Submitted.", response);
 
             }
 
@@ -131,21 +134,23 @@ public class MyApplication extends Application {
         });
     }
 
-    public String SubmitRollCall()
+    public String SubmitRollCall(String macAddress)
     {
-        String studentId = "foote";
-        String classId = "6F4502E2-798D-480A-A473-DD08F31F3BF6";
-        String hashtag = "arizona";
+        //String studentId = "foote";
+        //String classId = "6F4502E2-798D-480A-A473-DD08F31F3BF6";
+        //String hashtag = "arizona";
+        //String macAddress = "cda737ca5da4dc01a189fc41e3e67912";
 
         Log.d(TAG, "SubmitRollCall");
 
         SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
-        studentId = prefs.getString("studentid", null);
+        String studentId = prefs.getString("studentid", null);
 
 
         try {
 
-            new SubmitRollCallTask(studentId, classId, hashtag).execute();
+            //new SubmitRollCallTask(studentId, classId, hashtag).execute();
+            new SubmitRollCallTaskMAC(studentId, macAddress).execute();
 
             String response = "Success";
             Log.d(TAG, response);
