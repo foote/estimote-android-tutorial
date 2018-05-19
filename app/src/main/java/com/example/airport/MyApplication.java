@@ -94,7 +94,7 @@ public class MyApplication extends Application {
                             macAddress = macAddress.replace("]","");
                             Log.d(TAG, "MacAddress : " + macAddress);
                             Toast.makeText(getApplicationContext(), "onEnteredRegion:"+ beaconInfo.name, Toast.LENGTH_LONG).show();
-                            new MessageTask("Enter Region").execute();
+                            //new MessageTask("Enter Region").execute();
 
                             String response = SubmitRollCall(macAddress);
                             showNotification("RollCall Submitted.", response);
