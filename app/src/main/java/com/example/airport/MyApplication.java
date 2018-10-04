@@ -52,6 +52,7 @@ public class MyApplication extends Application {
     ArrayList<Class> classes = new ArrayList<Class>();
     ArrayList<Instructor> instructors = new ArrayList<Instructor>();
     String classId;
+    String macAddress;
 
     @Override
     public void onCreate() {
@@ -65,6 +66,7 @@ public class MyApplication extends Application {
 
             public void onEnteredRegion(BeaconRegion beaconRegion, List<Beacon> beacons) {
                 Log.d(TAG, "onEnteredRegion : " + beacons.size());
+
 
                 try {
                     GetInstructors();
@@ -82,8 +84,12 @@ public class MyApplication extends Application {
                             Log.d(TAG+" ==========", String.valueOf(beaconInfo.toString()));
                            // Log.d(TAG+" ==========", beaconInfo.getClass().getAnnotations());
                             Toast.makeText(getApplicationContext(), "onEnteredRegion:"+ beaconInfo.name, Toast.LENGTH_LONG).show();
+                            macAddress = beaconInfo.macAddress.toHexString();
 
-                            //classId = beaconInfo.settings[TAG]
+                            Log.d(TAG+" ========== MacAddress: ", macAddress);
+                            String response = SubmitRollCallviaMAC();
+                            showNotification(
+                                    "RollCall Submitted.", response);
                         }
 
                         @Override
@@ -94,9 +100,9 @@ public class MyApplication extends Application {
                 }
 
 
-                String response = SubmitRollCall();
-                showNotification(
-                        "RollCall Submitted.", response);
+                //String response = SubmitRollCall();
+                //String response = SubmitRollCallviaMAC();
+
 
             }
 
@@ -112,7 +118,7 @@ public class MyApplication extends Application {
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {
-                Log.d("Airport", "onServiceReady");
+                Log.d("TAG", "onServiceReady");
                 //beaconManager.startMonitoring(new BeaconRegion("monitored region",
                 //        UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 12988, 22472));
                 beaconManager.startMonitoring(new BeaconRegion("monitored region",
@@ -161,6 +167,47 @@ public class MyApplication extends Application {
 
     }
 
+    public String SubmitRollCallviaMAC()
+    {
+        String studentId = "200175160";
+        //String classId = "9aaf11de-79d3-44af-9e32-8c841a6a456d";
+        //String macAddress = "897f1db407815f5bf28bce2031c3073b";
+
+        String hashtag = "lab";
+
+        Log.d(TAG, "SubmitRollCallviaMAC : " + studentId + " : " + macAddress);
+
+        // Add client web service call
+        RestClient client = new RestClient("http://rollcallrest.azurewebsites.net/api/RollCall/Submit");
+        client.AddHeader("X-ApiKey", ApiKey);
+
+        SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
+        studentId = prefs.getString("studentid", null);
+
+        Log.d(TAG, "StudentId : " + studentId);
+
+        try {
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+            nameValuePairs.add(new BasicNameValuePair("StudentId", studentId));
+            nameValuePairs.add(new BasicNameValuePair("MacAddress", macAddress));
+            for(NameValuePair v : nameValuePairs) {
+                client.AddParam(v.getName(), v.getValue());
+            }
+            client.Execute(RestClient.RequestMethod.POST);
+            String response = client.getResponse();
+
+            Log.d(TAG, response);
+            return response;
+
+        } catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            return "Error";
+        }
+
+    }
+
+
     public void GetInstructors() throws JSONException
     {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -184,10 +231,10 @@ public class MyApplication extends Application {
         instructors = new ArrayList<Instructor>();
 
         String response = client.getResponse();
-        Log.d("Airport", "Response : " + response);
+        Log.d(TAG, "Response : " + response);
 
         JSONArray json = new JSONArray(response);
-        Log.d("Airport", "jObject : " + json);
+        Log.d(TAG, "jObject : " + json);
 
         for (int i=0; i < json.length(); i++)
         {
@@ -203,7 +250,7 @@ public class MyApplication extends Application {
                 instructors.add((instructor));
 
             } catch (JSONException e) {
-                Log.e("Airport", "exception", e);
+                Log.e(TAG, "exception", e);
             }
         }
 

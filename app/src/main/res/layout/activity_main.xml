@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:id="@+id/txtInfo"
         android:textColor="@color/white"
+        android:textSize="30dp"
         android:layout_height="wrap_content" />
 
     <TextView android:text="@string/txtStudentId"
@@ -19,6 +20,7 @@
         android:id="@+id/txtStudentId"
         android:textColor="@color/white"
         android:layout_below="@id/txtInfo"
+        android:textSize="30dp"
         android:layout_height="wrap_content" />
 
     <Button
@@ -27,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:textSize="30dp"
         android:text="@string/clear" />
 
     <Button
@@ -34,6 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:textSize="30dp"
         android:layout_toLeftOf="@+id/btnClear"
         android:text="@string/SetStudent" />
 </RelativeLayout>
