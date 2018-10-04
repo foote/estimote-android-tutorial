@@ -24,11 +24,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final Map<String, List<String>> PLACES_BY_BEACONS;
     private static final String TAG = "RollCall";
+    TextView tvLog;
+    String nearestPlace;
 
+    //Canvasback 65535 : 33066 : Pink
+    //Mallard 46576 : 29665 : Yellow
+    //Pintail 12988 : 22472 : Red
+    //Widgeon: 2248:21110 : White
+    //Vikings : 56768:40033 : Pink
+    //Bears : 5736:57752 : Red
+    //Lions : 62882:59718 : Yellow
+    //Packers : 811:10869 : White
 
     // TODO: replace "<major>:<minor>" strings to match your own beacons.
     static {
@@ -36,25 +50,30 @@ public class MainActivity extends AppCompatActivity {
 
         placesByBeacons.put("46576:29665", new ArrayList<String>() {{
             add("mallard");
-            // read as: "Heavenly Sandwiches" is closest
-            // to the beacon with major 22504 and minor 48827
-            add("pintail");
-            // "Green & Green Salads" is the next closest
-            add("bears");
-            // "Mini Panini" is the furthest away
         }});
         placesByBeacons.put("12988:22472", new ArrayList<String>() {{
             add("pintail");
-            add("bears");
-            add("mallard");
         }});
 
+        placesByBeacons.put("2248:21110", new ArrayList<String>() {{
+            add("widgeon");
+        }});
+        placesByBeacons.put("65535:33066", new ArrayList<String>() {{
+            add("canvasback");
+        }});
+
+        placesByBeacons.put("56768:40033", new ArrayList<String>() {{
+            add("vikings");
+        }});
         placesByBeacons.put("5736:57752", new ArrayList<String>() {{
             add("bears");
-            add("pintail");
-            add("mallard");
         }});
-
+        placesByBeacons.put("62882:59718", new ArrayList<String>() {{
+            add("lions");
+        }});
+        placesByBeacons.put("811:10869", new ArrayList<String>() {{
+            add("packers");
+        }});
         PLACES_BY_BEACONS = Collections.unmodifiableMap(placesByBeacons);
     }
 
@@ -74,11 +93,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AppCenter.start(getApplication(), "e257ea9a-91bb-4904-86b7-bcfbb7dfd65f",
+                Analytics.class, Crashes.class);
+
         // If they student is not set, show the correct acitvity.
         SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
         String studentid = prefs.getString("studentid", null);
+        tvLog = (TextView)findViewById(R.id.tvLog);
 
         Log.d(TAG, "StudentId : " + studentid);
+        tvLog.append("StudentId : " + studentid + "\r\n");
 
         Button btnSetStudent = (Button)findViewById(R.id.btnSetStudent);
         btnSetStudent.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +120,10 @@ public class MainActivity extends AppCompatActivity {
         btnClear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
+
+
                 Log.d(TAG+" ==========", "Clearing StudentId...");
+                tvLog.append("Clearing StudentId...\r\n");
                 SharedPreferences.Editor editor = getSharedPreferences("RollCall", MODE_PRIVATE).edit();
                 editor.putString("studentid", null);
                 editor.commit();
@@ -104,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
                 String studentid = prefs.getString("studentid", null);
                 Log.d(TAG+" ==========", "Getting : " + studentid);
+                tvLog.append("Getting : " + studentid + "\r\n");
                 TextView tv = (TextView)findViewById(R.id.txtStudentId);
                 tv.setText("StudentId: " + studentid);
 
@@ -120,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
         {
             TextView tv = (TextView)findViewById(R.id.txtStudentId);
             tv.setText("StudentId: " + studentid);
+            tvLog.append("StudentId : " + studentid + "\r\n");
         }
+
 
         beaconManager = new BeaconManager(this);
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
@@ -131,10 +161,16 @@ public class MainActivity extends AppCompatActivity {
                     Beacon nearestBeacon = beacons.get(0);
                     List<String> places = placesNearBeacon(nearestBeacon);
 
-                    //Log.d("Airport", "Nearest places: " + places);
+                    //Log.d(TAG, "Nearest beacon: " + nearestBeacon.toString());
+                    //Log.d(TAG, "Nearest places: " + places);
+                    //new MessageTask("Nearest places: " + places).execute();
                     // TODO: update the UI here
                     TextView et = (TextView)findViewById(R.id.txtInfo);
                     et.setText("Nearest places: " + places);
+                    tvLog.append("Nearest places: " + places + "\r\n");
+                    //Message message = new Message();
+                    //String response = message.SendMessage("Nearest places: " + places);
+                    //message = null;
                 }
 
             }
@@ -147,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
-
+        Log.d(TAG, "onResume");
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {
@@ -159,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         beaconManager.stopRanging(region);
-
+        Log.d(TAG, "onPause");
         super.onPause();
     }
 
