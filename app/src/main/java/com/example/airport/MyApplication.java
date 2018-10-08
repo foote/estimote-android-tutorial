@@ -52,6 +52,7 @@ public class MyApplication extends Application {
     ArrayList<Class> classes = new ArrayList<Class>();
     ArrayList<Instructor> instructors = new ArrayList<Instructor>();
     String classId;
+    String macAddress;
 
     @Override
     public void onCreate() {
@@ -82,8 +83,12 @@ public class MyApplication extends Application {
                             Log.d(TAG+" ==========", String.valueOf(beaconInfo.toString()));
                            // Log.d(TAG+" ==========", beaconInfo.getClass().getAnnotations());
                             Toast.makeText(getApplicationContext(), "onEnteredRegion:"+ beaconInfo.name, Toast.LENGTH_LONG).show();
+                            macAddress = beaconInfo.macAddress.toHexString();
+                            Log.d(TAG+" ==========: MacAddress ", macAddress);
 
-                            //classId = beaconInfo.settings[TAG]
+                            String response = SubmitRollCallMacAddress();
+                            showNotification(
+                                    "RollCall Submitted.", response);
                         }
 
                         @Override
@@ -94,9 +99,7 @@ public class MyApplication extends Application {
                 }
 
 
-                String response = SubmitRollCall();
-                showNotification(
-                        "RollCall Submitted.", response);
+
 
             }
 
@@ -161,8 +164,44 @@ public class MyApplication extends Application {
 
     }
 
+    public String SubmitRollCallMacAddress()
+    {
+
+        Log.d(TAG, "SubmitRollCallMacAddress");
+        String studentId;
+
+        // Add client web service call
+        RestClient client = new RestClient("http://rollcallrest.azurewebsites.net/api/RollCall/Submit");
+        client.AddHeader("X-ApiKey", ApiKey);
+
+        SharedPreferences prefs = getSharedPreferences("RollCall", MODE_PRIVATE);
+        studentId = prefs.getString("studentid", null);
+
+        try {
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+            nameValuePairs.add(new BasicNameValuePair("studentid", studentId));
+            nameValuePairs.add(new BasicNameValuePair("macaddress", macAddress));
+            Log.d(TAG, "StudentId : " + studentId + ": MacAddress : " + macAddress);
+            for(NameValuePair v : nameValuePairs) {
+                client.AddParam(v.getName(), v.getValue());
+            }
+            client.Execute(RestClient.RequestMethod.POST);
+            String response = client.getResponse();
+
+            Log.d(TAG, response);
+            return response;
+
+        } catch (Exception e) {
+            Log.e(TAG, "exception", e);
+            return "Error";
+        }
+
+    }
+
     public void GetInstructors() throws JSONException
     {
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -180,6 +219,7 @@ public class MyApplication extends Application {
             Log.e(TAG, "exception", e);
             //e.printStackTrace();
         }
+
 
         instructors = new ArrayList<Instructor>();
 
