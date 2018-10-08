@@ -1,5 +1,7 @@
 package com.example.airport;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class RestClient {
 
@@ -31,11 +36,13 @@ public class RestClient {
     private ArrayList <NameValuePair> headers;
 
     private String url;
+    private static final String TAG = "RestClient";
 
     private int responseCode;
     private String message;
 
     private String response;
+    private Response responseObj;
 
     public String getResponse() {
         return response;
@@ -136,6 +143,7 @@ public class RestClient {
             if (entity != null) {
 
                 InputStream instream = entity.getContent();
+
                 response = convertStreamToString(instream);
 
                 // Closing the input stream will trigger connection release
@@ -155,13 +163,19 @@ public class RestClient {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
-
+        String msg = "";
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
                 sb.append(line + "\n");
+                JSONObject input = new JSONObject(line);
+                msg = input.getString("ResponseMessage");
+                Log.println(Log.DEBUG, TAG, "Msg : " + msg);
+
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -170,6 +184,7 @@ public class RestClient {
                 e.printStackTrace();
             }
         }
-        return sb.toString();
+        //return sb.toString();
+        return msg;
     }
 }

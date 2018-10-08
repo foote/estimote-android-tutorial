@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@layout/gradient"
     tools:context="com.example.airport.Log">
 
 </android.support.constraint.ConstraintLayout>

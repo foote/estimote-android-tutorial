@@ -19,6 +19,7 @@ import com.estimote.coresdk.service.BeaconManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,8 +167,14 @@ public class MainActivity extends AppCompatActivity {
                     //new MessageTask("Nearest places: " + places).execute();
                     // TODO: update the UI here
                     TextView et = (TextView)findViewById(R.id.txtInfo);
-                    et.setText("Nearest places: " + places);
-                    tvLog.append("Nearest places: " + places + "\r\n");
+                    //et.setText("Nearest places: " + places);
+                    //tvLog.append("Nearest places: " + places + "\r\n");
+
+                    Date d = new Date();
+
+                    tvLog.setText(d.toString() + " Nearest    : " + places);
+
+
                     //Message message = new Message();
                     //String response = message.SendMessage("Nearest places: " + places);
                     //message = null;

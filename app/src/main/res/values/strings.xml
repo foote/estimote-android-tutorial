@@ -3,6 +3,7 @@
     <string name="setInstitution1">Welcome to RollCall!  In order to use the software, you must first pick an institution.</string>
     <string name="setInstitution2">Please pick an Institution:</string>
     <string name="txtStudentId">StudentId:</string>
+    <string name="lblStudentId">Enter a Student Id:</string>
     <string name="SetStudent">Set Student</string>
     <string name="clear">Clear</string>
     <string name="save">Save</string>
@@ -52,4 +53,5 @@
     <string name="title_set_institution">Set Institution</string>
     <string name="Back">Back</string>
     <string name="Add">Add</string>
+    <string name="Save">Save</string>
 </resources>

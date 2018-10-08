@@ -10,17 +10,19 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="30dp"
-        android:text="Enter Student id:" />
+        android:gravity="center_horizontal"
+        android:layout_marginTop="400px"
+        android:text="@string/lblStudentId" />
 
     <EditText
         android:id="@+id/txtStudentId"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_below="@+id/lblStudentId"
+        android:inputType="number"
+        android:textColor="@color/white"
         android:ems="10"
         android:textSize="30dp"
-        android:inputType="text"
         android:width="240dp" />
 
     <Button
@@ -29,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:textSize="30dp"
+        android:ems="10"
         android:text="@string/Back" />
 
     <Button
@@ -37,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:textSize="30dp"
+        android:ems="10"
         android:layout_toLeftOf="@+id/Back"
         android:text="@string/save" />
 
